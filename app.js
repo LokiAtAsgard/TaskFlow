@@ -5,7 +5,8 @@
 /* ================================
    FIREBASE CONFIGURATION
    ================================ */
-
+   import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 // Firebase configuration object (your project config)
 const firebaseConfig = {
   apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
