@@ -155,6 +155,7 @@ function priorityToStars(priority) {
   }
 }
 
+
 /* ================================
    RENDER FUNCTIONS
    ================================ */
@@ -189,7 +190,7 @@ function renderTasksToDisplay() {
     );
 
     const span = document.createElement('span');
-    span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
+span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
 
     const delBtn = document.createElement('button');
     delBtn.textContent = '❌';
