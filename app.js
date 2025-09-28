@@ -5,7 +5,6 @@
 /* ================================
    FIREBASE CONFIGURATION
    ================================ */
-
 const firebaseConfig = {
   apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
   authDomain: "taskflow-aa2ec.firebaseapp.com",
@@ -33,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeTaskFlowApplication() {
+  console.log("TaskFlow Firebase application is starting...");
   initializeFirebaseConnection();
   setupEventListeners();
 }
@@ -46,6 +46,7 @@ function initializeFirebaseConnection() {
     firebaseDatabase = firebase.database();
     tasksReference = firebaseDatabase.ref('tasks');
 
+    console.log("Firebase initialized successfully!");
     updateFirebaseConnectionStatus('🟢 Connected to Firebase', 'success');
     setupFirebaseRealTimeListener();
     testFirebaseConnection();
@@ -59,6 +60,7 @@ function initializeFirebaseConnection() {
 
 function setupFirebaseRealTimeListener() {
   tasksReference.on('value', function(snapshot) {
+    console.log("Firebase data updated - syncing with UI...");
     const data = snapshot.val();
     if (data) {
       allTasksArray = Object.keys(data).map(key => ({
@@ -83,7 +85,7 @@ function testFirebaseConnection() {
     .then(snapshot => {
       const val = snapshot.val();
       if (val && val.message === testData.message) {
-        console.log('Firebase connection test successful');
+        console.log("Firebase connection test successful");
         updateFirebaseConnectionStatus('🟢 Firebase fully operational', 'success');
       }
       testRef.remove();
@@ -127,7 +129,6 @@ function handleAddNewTaskClick() {
     createdAt: Date.now()
   };
 
-  // Save to Firebase
   const newRef = tasksReference.push();
   newRef.set(newTask);
 
@@ -151,7 +152,6 @@ function renderTasksToDisplay() {
 
   let tasksToRender = [...allTasksArray];
 
-  // Apply filter
   if (currentActiveFilter === 'pending') {
     tasksToRender = tasksToRender.filter(t => !t.completed);
   } else if (currentActiveFilter === 'completed') {
@@ -236,5 +236,6 @@ function updateFirebaseConnectionStatus(msg, type) {
 }
 
 function fallbackToLocalStorage() {
+  console.warn("Falling back to local storage...");
   updateFirebaseConnectionStatus('🟡 Using offline mode', 'warning');
 }
