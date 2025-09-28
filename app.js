@@ -225,11 +225,14 @@ function handleFilterButtonClick(e) {
 
   currentActiveFilter = e.target.dataset.filter;
   function priorityToStars(priority) {
-  if (priority === 'low') return '⭐';
-  if (priority === 'medium') return '⭐⭐';
-  if (priority === 'high') return '⭐⭐⭐';
-  return '';
+  switch (priority) {
+    case 'low': return '⭐';
+    case 'medium': return '⭐⭐';
+    case 'high': return '⭐⭐⭐';
+    default: return '';
+  }
 }
+
 
   renderTasksToDisplay();
 }
