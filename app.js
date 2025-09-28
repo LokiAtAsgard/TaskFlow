@@ -177,8 +177,9 @@ function renderTasksToDisplay() {
     );
 
     
-    const span = document.createElement('span');
-    span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
+   const span = document.createElement('span');
+span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
+
 
 
 
