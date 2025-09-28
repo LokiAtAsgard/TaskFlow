@@ -8,14 +8,15 @@
 
 // Firebase configuration object (your project config)
 const firebaseConfig = {
-    apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
-    authDomain: "taskflow-aa2ec.firebaseapp.com",
-    projectId: "taskflow-aa2ec",
-    storageBucket: "taskflow-aa2ec.firebasestorage.app",
-    messagingSenderId: "1002898388073",
-    appId: "1:1002898388073:web:1ae1aa8957ae3572ab9ef8",
-    measurementId: "G-4NXTRCZQST"
-  };
+  apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
+  authDomain: "taskflow-aa2ec.firebaseapp.com",
+  databaseURL: "https://taskflow-aa2ec-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "taskflow-aa2ec",
+  storageBucket: "taskflow-aa2ec.firebasestorage.app",
+  messagingSenderId: "1002898388073",
+  appId: "1:1002898388073:web:1ae1aa8957ae3572ab9ef8",
+  measurementId: "G-4NXTRCZQST"
+};
   
   // Initialize Firebase
   let firebaseApp;
