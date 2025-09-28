@@ -38,19 +38,18 @@
 
     <!-- Task input -->
     <section class="taskInputSection">
-      <div class="inputGroupContainer">
-        <input 
-          type="text" 
-          id="newTaskInput" 
-          class="taskDescriptionInput" 
-          placeholder="Enter a new task..." />
+        <div class="inputGroupContainer">
+            <input type="text"
+                   id="newTaskInput"
+                   class="taskDescriptionInput"
+                   placeholder="Enter a new task..." />
         <select id="taskPriorityDropdown" class="taskPrioritySelector">
-          <option value="high">High</option>
-          <option value="medium" selected>Medium</option>
-          <option value="low">Low</option>
+            <option value="low">⭐ (Low)</option>
+            <option value="medium" selected>⭐⭐ (Medium)</option>
+            <option value="high">⭐⭐⭐ (High)</option>
         </select>
-        <button id="addNewTaskButton" class="addTaskButton">Add Task</button>
-      </div>
+            <button id="addNewTaskButton" class="addTaskButton">Add Task</button>
+        </div>
       <div class="filterButtonsContainer">
         <button class="filterButton activeFilter" data-filter="all">All</button>
         <button class="filterButton" data-filter="pending">Pending</button>
