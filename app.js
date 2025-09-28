@@ -5,9 +5,7 @@
 /* ================================
    FIREBASE CONFIGURATION
    ================================ */
-   import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// Firebase configuration object (your project config)
+
 const firebaseConfig = {
   apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
   authDomain: "taskflow-aa2ec.firebaseapp.com",
@@ -18,188 +16,225 @@ const firebaseConfig = {
   appId: "1:1002898388073:web:1ae1aa8957ae3572ab9ef8",
   measurementId: "G-4NXTRCZQST"
 };
-  
-  // Initialize Firebase
-  let firebaseApp;
-  let firebaseDatabase;
-  let tasksReference; // Reference to the 'tasks' node in Firebase
-  
-  /* ================================
-     GLOBAL VARIABLES AND STATE
-     ================================ */
-  
-  // Main array to store all task objects (synced with Firebase)
-  let allTasksArray = [];
-  
-  // Variable to track which filter is currently active (all, pending, completed, high)
-  let currentActiveFilter = 'all';
-  
-  // Firebase connection status
-  let isFirebaseConnected = false;
-  
-  /* ================================
-     APPLICATION INITIALIZATION
-     ================================ */
-  
-  // Wait for the DOM (HTML) to fully load before running JavaScript
-  document.addEventListener('DOMContentLoaded', function() {
-      initializeTaskFlowApplication();
+
+let firebaseApp;
+let firebaseDatabase;
+let tasksReference;
+
+let allTasksArray = [];
+let currentActiveFilter = 'all';
+let isFirebaseConnected = false;
+
+/* ================================
+   INITIALIZATION
+   ================================ */
+document.addEventListener('DOMContentLoaded', function() {
+  initializeTaskFlowApplication();
+});
+
+function initializeTaskFlowApplication() {
+  initializeFirebaseConnection();
+  setupEventListeners();
+}
+
+/* ================================
+   FIREBASE CONNECTION
+   ================================ */
+function initializeFirebaseConnection() {
+  try {
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    firebaseDatabase = firebase.database();
+    tasksReference = firebaseDatabase.ref('tasks');
+
+    updateFirebaseConnectionStatus('🟢 Connected to Firebase', 'success');
+    setupFirebaseRealTimeListener();
+    testFirebaseConnection();
+    isFirebaseConnected = true;
+  } catch (err) {
+    console.error('Firebase init error:', err);
+    updateFirebaseConnectionStatus('🔴 Firebase connection failed', 'error');
+    fallbackToLocalStorage();
+  }
+}
+
+function setupFirebaseRealTimeListener() {
+  tasksReference.on('value', function(snapshot) {
+    const data = snapshot.val();
+    if (data) {
+      allTasksArray = Object.keys(data).map(key => ({
+        firebaseKey: key,
+        ...data[key]
+      }));
+    } else {
+      allTasksArray = [];
+    }
+    renderTasksToDisplay();
+    updateStatisticsDisplay();
+    updateProgressBarDisplay();
   });
-  
-  /**
-   * Initialize the TaskFlow application with Firebase
-   */
-  function initializeTaskFlowApplication() {
-      console.log('TaskFlow Firebase application is starting...');
-  
-      // Initialize Firebase connection
-      initializeFirebaseConnection();
-  
-      // Set up event listeners for user interactions
-      setupEventListeners();
-  
-      console.log('TaskFlow application initialized successfully!');
-  }
-  
-  /* ================================
-     FIREBASE INITIALIZATION AND CONNECTION
-     ================================ */
-  
-  function initializeFirebaseConnection() {
-      try {
-          // Initialize Firebase app
-          firebaseApp = firebase.initializeApp(firebaseConfig);
-          firebaseDatabase = firebase.database();
-  
-          // Create reference to the 'tasks' node in Firebase database
-          tasksReference = firebaseDatabase.ref('tasks');
-  
-          console.log('Firebase initialized successfully!');
-          updateFirebaseConnectionStatus('🟢 Connected to Firebase', 'success');
-  
-          // Set up real-time listener for tasks data
-          setupFirebaseRealTimeListener();
-  
-          // Test the connection
-          testFirebaseConnection();
-  
-          isFirebaseConnected = true;
-      } catch (firebaseError) {
-          console.error('Firebase initialization error:', firebaseError);
-          updateFirebaseConnectionStatus('🔴 Firebase connection failed', 'error');
-  
-          // Fall back to local storage if Firebase fails
-          fallbackToLocalStorage();
+}
+
+function testFirebaseConnection() {
+  const testRef = firebaseDatabase.ref('connectionTest');
+  const testData = { message: 'TaskFlow connection test', timestamp: Date.now() };
+
+  testRef.set(testData)
+    .then(() => testRef.once('value'))
+    .then(snapshot => {
+      const val = snapshot.val();
+      if (val && val.message === testData.message) {
+        console.log('Firebase connection test successful');
+        updateFirebaseConnectionStatus('🟢 Firebase fully operational', 'success');
       }
+      testRef.remove();
+    })
+    .catch(err => {
+      console.error('Firebase connection test failed:', err);
+      updateFirebaseConnectionStatus('🟠 Firebase connection unstable', 'warning');
+    });
+}
+
+/* ================================
+   EVENT LISTENERS
+   ================================ */
+function setupEventListeners() {
+  const addNewTaskButton = document.getElementById('addNewTaskButton');
+  const newTaskInput = document.getElementById('newTaskInput');
+  const filterButtonsContainer = document.querySelector('.filterButtonsContainer');
+
+  addNewTaskButton.addEventListener('click', handleAddNewTaskClick);
+  newTaskInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') handleAddNewTaskClick();
+  });
+
+  filterButtonsContainer.addEventListener('click', handleFilterButtonClick);
+}
+
+/* ================================
+   TASK CRUD
+   ================================ */
+function handleAddNewTaskClick() {
+  const input = document.getElementById('newTaskInput');
+  const priority = document.getElementById('taskPriorityDropdown').value;
+  const description = input.value.trim();
+
+  if (description === '') return;
+
+  const newTask = {
+    description,
+    priority,
+    completed: false,
+    createdAt: Date.now()
+  };
+
+  // Save to Firebase
+  const newRef = tasksReference.push();
+  newRef.set(newTask);
+
+  input.value = '';
+}
+
+function toggleTaskCompletion(taskKey, completed) {
+  tasksReference.child(taskKey).update({ completed });
+}
+
+function deleteTask(taskKey) {
+  tasksReference.child(taskKey).remove();
+}
+
+/* ================================
+   RENDER FUNCTIONS
+   ================================ */
+function renderTasksToDisplay() {
+  const container = document.getElementById('taskListContainer');
+  container.innerHTML = '';
+
+  let tasksToRender = [...allTasksArray];
+
+  // Apply filter
+  if (currentActiveFilter === 'pending') {
+    tasksToRender = tasksToRender.filter(t => !t.completed);
+  } else if (currentActiveFilter === 'completed') {
+    tasksToRender = tasksToRender.filter(t => t.completed);
+  } else if (currentActiveFilter === 'high') {
+    tasksToRender = tasksToRender.filter(t => t.priority === 'high');
   }
-  
-  /**
-   * Set up real-time listener for Firebase data changes
-   */
-  function setupFirebaseRealTimeListener() {
-      tasksReference.on('value', function(firebaseSnapshot) {
-          console.log('Firebase data updated - syncing with UI...');
-  
-          const firebaseTasksData = firebaseSnapshot.val();
-  
-          if (firebaseTasksData) {
-              allTasksArray = Object.keys(firebaseTasksData).map(taskKey => ({
-                  firebaseKey: taskKey,
-                  ...firebaseTasksData[taskKey]
-              }));
-          } else {
-              allTasksArray = [];
-          }
-  
-          renderTasksToDisplay();
-          updateStatisticsDisplay();
-          updateProgressBarDisplay();
-  
-          console.log(`Synced ${allTasksArray.length} tasks from Firebase`);
-      }, function(error) {
-          console.error('Firebase listener error:', error);
-          updateFirebaseConnectionStatus('🟠 Connection issues detected', 'warning');
-      });
+
+  if (tasksToRender.length === 0) {
+    container.innerHTML = '<p>No tasks found.</p>';
+    return;
   }
-  
-  /**
-   * Test Firebase connection by writing and reading a test value
-   */
-  function testFirebaseConnection() {
-      const testReference = firebaseDatabase.ref('connectionTest');
-      const testData = {
-          timestamp: Date.now(),
-          message: 'TaskFlow connection test'
-      };
-  
-      testReference.set(testData)
-          .then(() => testReference.once('value'))
-          .then((snapshot) => {
-              const readData = snapshot.val();
-              if (readData && readData.message === testData.message) {
-                  console.log('Firebase connection test successful');
-                  updateFirebaseConnectionStatus('🟢 Firebase fully operational', 'success');
-              }
-              testReference.remove();
-          })
-          .catch((error) => {
-              console.error('Firebase connection test failed:', error);
-              updateFirebaseConnectionStatus('🟠 Firebase connection unstable', 'warning');
-          });
+
+  tasksToRender.forEach(task => {
+    const taskDiv = document.createElement('div');
+    taskDiv.className = `taskItem ${task.completed ? 'completed' : ''}`;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = task.completed;
+    checkbox.addEventListener('change', () =>
+      toggleTaskCompletion(task.firebaseKey, checkbox.checked)
+    );
+
+    const span = document.createElement('span');
+    span.textContent = `[${task.priority}] ${task.description}`;
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '❌';
+    delBtn.addEventListener('click', () => deleteTask(task.firebaseKey));
+
+    taskDiv.appendChild(checkbox);
+    taskDiv.appendChild(span);
+    taskDiv.appendChild(delBtn);
+
+    container.appendChild(taskDiv);
+  });
+}
+
+function updateStatisticsDisplay() {
+  const total = allTasksArray.length;
+  const completed = allTasksArray.filter(t => t.completed).length;
+  const pending = total - completed;
+
+  document.getElementById('totalTasksDisplay').textContent = total;
+  document.getElementById('completedTasksDisplay').textContent = completed;
+  document.getElementById('pendingTasksDisplay').textContent = pending;
+}
+
+function updateProgressBarDisplay() {
+  const completed = allTasksArray.filter(t => t.completed).length;
+  const total = allTasksArray.length;
+  const percent = total > 0 ? (completed / total) * 100 : 0;
+
+  document.getElementById('taskProgressBar').style.width = percent + '%';
+}
+
+/* ================================
+   FILTER HANDLING
+   ================================ */
+function handleFilterButtonClick(e) {
+  if (!e.target.matches('.filterButton')) return;
+
+  document.querySelectorAll('.filterButton').forEach(btn =>
+    btn.classList.remove('activeFilter')
+  );
+  e.target.classList.add('activeFilter');
+
+  currentActiveFilter = e.target.dataset.filter;
+  renderTasksToDisplay();
+}
+
+/* ================================
+   STATUS HELPERS
+   ================================ */
+function updateFirebaseConnectionStatus(msg, type) {
+  const el = document.getElementById('firebaseStatusText');
+  if (el) {
+    el.textContent = msg;
+    el.className = `firebaseStatus status-${type}`;
   }
-  
-  /* ================================
-     STATUS DISPLAY HELPERS
-     ================================ */
-  
-  function updateFirebaseConnectionStatus(statusMessage, statusType) {
-      const statusElement = document.getElementById('firebaseStatusText');
-      if (statusElement) {
-          statusElement.textContent = statusMessage;
-          statusElement.classList.remove('status-success', 'status-error', 'status-warning');
-          statusElement.classList.add(`status-${statusType}`);
-      }
-  }
-  
-  function fallbackToLocalStorage() {
-      console.log('Falling back to local storage...');
-      isFirebaseConnected = false;
-  
-      loadTasksFromLocalStorage();
-      renderTasksToDisplay();
-      updateStatisticsDisplay();
-      updateProgressBarDisplay();
-      updateFirebaseConnectionStatus('🟡 Using offline mode', 'warning');
-  }
-  
-  /* ================================
-     EVENT LISTENER SETUP
-     ================================ */
-  
-  function setupEventListeners() {
-      const newTaskInputField = document.getElementById('newTaskInput');
-      const addNewTaskButton = document.getElementById('addNewTaskButton');
-      const filterButtonsContainer = document.querySelector('.filterButtonsContainer');
-  
-      addNewTaskButton.addEventListener('click', handleAddNewTaskClick);
-  
-      newTaskInputField.addEventListener('keypress', function(keyboardEvent) {
-          if (keyboardEvent.key === 'Enter') {
-              handleAddNewTaskClick();
-          }
-      });
-  
-      filterButtonsContainer.addEventListener('click', handleFilterButtonClick);
-  
-      window.addEventListener('beforeunload', function(event) {
-          if (!isFirebaseConnected && allTasksArray.length > 0) {
-              event.preventDefault();
-              event.returnValue = 'You have unsaved tasks. Are you sure you want to leave?';
-          }
-      });
-  }
-  
-  /* ================================
-     (rest of your functions remain unchanged)
-     ================================ */
-  
+}
+
+function fallbackToLocalStorage() {
+  updateFirebaseConnectionStatus('🟡 Using offline mode', 'warning');
+}
