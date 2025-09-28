@@ -178,7 +178,8 @@ function renderTasksToDisplay() {
 
     
     const span = document.createElement('span');
-    span.textContent = `${priorityToStars(task.priority)} ${task.description}`;
+    span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
+
 
 
     const delBtn = document.createElement('button');

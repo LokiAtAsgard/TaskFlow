@@ -580,3 +580,9 @@ body {
         margin-bottom: 10px; /* Less spacing in print */
     }
 }
+
+.priorityStars {
+    color: gold;
+    font-size: 1.1em;
+    margin-right: 6px;
+}
