@@ -144,6 +144,18 @@ function deleteTask(taskKey) {
 }
 
 /* ================================
+   HELPERS
+   ================================ */
+function priorityToStars(priority) {
+  switch (priority) {
+    case 'low': return '⭐';
+    case 'medium': return '⭐⭐';
+    case 'high': return '⭐⭐⭐';
+    default: return '';
+  }
+}
+
+/* ================================
    RENDER FUNCTIONS
    ================================ */
 function renderTasksToDisplay() {
@@ -176,12 +188,8 @@ function renderTasksToDisplay() {
       toggleTaskCompletion(task.firebaseKey, checkbox.checked)
     );
 
-    
-   const span = document.createElement('span');
-span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
-
-
-
+    const span = document.createElement('span');
+    span.innerHTML = `<span class="priorityStars">${priorityToStars(task.priority)}</span> ${task.description}`;
 
     const delBtn = document.createElement('button');
     delBtn.textContent = '❌';
@@ -225,16 +233,6 @@ function handleFilterButtonClick(e) {
   e.target.classList.add('activeFilter');
 
   currentActiveFilter = e.target.dataset.filter;
-  function priorityToStars(priority) {
-  switch (priority) {
-    case 'low': return '⭐';
-    case 'medium': return '⭐⭐';
-    case 'high': return '⭐⭐⭐';
-    default: return '';
-  }
-}
-
-
   renderTasksToDisplay();
 }
 
