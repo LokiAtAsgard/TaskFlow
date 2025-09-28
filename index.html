@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow App</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Firebase SDKs (load before app.js) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+  <div class="applicationContainer">
+    <!-- Header -->
+    <header class="headerSection">
+      <h1 class="mainTitle">TaskFlow</h1>
+      <p class="headerDescription">Smart task management with Firebase</p>
+      <div id="firebaseStatusText" class="firebaseStatus">Connecting...</div>
+    </header>
+
+    <!-- Stats -->
+    <section class="statisticsSection">
+      <div class="statisticItem">
+        <div id="totalTasksDisplay" class="statisticNumber">0</div>
+        <div class="statisticLabel">Total</div>
+      </div>
+      <div class="statisticItem">
+        <div id="completedTasksDisplay" class="statisticNumber">0</div>
+        <div class="statisticLabel">Completed</div>
+      </div>
+      <div class="statisticItem">
+        <div id="pendingTasksDisplay" class="statisticNumber">0</div>
+        <div class="statisticLabel">Pending</div>
+      </div>
+    </section>
+
+    <!-- Task input -->
+    <section class="taskInputSection">
+      <div class="inputGroupContainer">
+        <input 
+          type="text" 
+          id="newTaskInput" 
+          class="taskDescriptionInput" 
+          placeholder="Enter a new task..." />
+        <select id="taskPriorityDropdown" class="taskPrioritySelector">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <button id="addNewTaskButton" class="addTaskButton">Add Task</button>
+      </div>
+      <div class="filterButtonsContainer">
+        <button class="filterButton activeFilter" data-filter="all">All</button>
+        <button class="filterButton" data-filter="pending">Pending</button>
+        <button class="filterButton" data-filter="completed">Completed</button>
+        <button class="filterButton" data-filter="high">High Priority</button>
+      </div>
+      <div class="progressBarContainer">
+        <div id="taskProgressBar" class="progressBarFill"></div>
+      </div>
+    </section>
+
+    <!-- Tasks list -->
+    <section id="taskListContainer" class="tasksDisplaySection">
+      <div class="loadingMessage">Loading tasks...</div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="applicationFooter">
+      <p>TaskFlow &copy; 2025</p>
+      <p>Firebase-powered task manager</p>
+    </footer>
+  </div>
+
+  <!-- Your App Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

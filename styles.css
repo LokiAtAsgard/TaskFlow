@@ -1,0 +1,582 @@
+/* ================================
+   TASKFLOW FIREBASE CSS STYLES
+   Complete styling for TaskFlow app
+   ================================ */
+
+/* ================================
+   CSS RESET AND BASE STYLES
+   ================================ */
+
+/* Remove default margins, padding, and set consistent box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+}
+
+/* Base body styling for the entire application */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, readable font stack */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Purple gradient background */
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    padding: 20px; /* Add space around the entire app */
+    line-height: 1.6; /* Better text readability */
+}
+
+/* ================================
+   MAIN APPLICATION CONTAINER
+   ================================ */
+
+/* Main container that holds the entire application */
+.applicationContainer {
+    max-width: 800px; /* Maximum width for better readability on large screens */
+    margin: 0 auto; /* Center the container horizontally */
+    background: white; /* White background for content area */
+    border-radius: 20px; /* Rounded corners for modern look */
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    overflow: hidden; /* Prevent content from breaking rounded corners */
+}
+
+/* ================================
+   HEADER SECTION STYLING
+   ================================ */
+
+/* Header section with app title and description */
+.headerSection {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Matching gradient */
+    color: white; /* White text for contrast */
+    padding: 30px; /* Space inside header */
+    text-align: center; /* Center-align header content */
+}
+
+/* Main application title styling */
+.mainTitle {
+    font-size: 2.5em; /* Large, prominent title */
+    margin-bottom: 10px; /* Space below title */
+    font-weight: bold; /* Make title stand out */
+}
+
+/* Header description text styling */
+.headerDescription {
+    opacity: 0.9; /* Slightly transparent for subtle effect */
+    font-size: 1.1em; /* Slightly larger than normal text */
+    margin-bottom: 10px; /* Space below description */
+}
+
+/* Firebase connection status indicator */
+.firebaseStatus {
+    font-size: 0.9em; /* Smaller text for status */
+    margin-top: 10px; /* Space above status text */
+    opacity: 0.9; /* Slightly transparent */
+    padding: 5px 10px; /* Small padding */
+    border-radius: 15px; /* Rounded background */
+    background: rgba(255,255,255,0.1); /* Semi-transparent background */
+    display: inline-block; /* Inline with padding */
+    transition: all 0.3s ease; /* Smooth transitions */
+}
+
+/* Firebase status color variations */
+.firebaseStatus.status-success {
+    background: rgba(40, 167, 69, 0.3); /* Green tint for success */
+}
+
+.firebaseStatus.status-error {
+    background: rgba(220, 53, 69, 0.3); /* Red tint for errors */
+}
+
+.firebaseStatus.status-warning {
+    background: rgba(255, 193, 7, 0.3); /* Yellow tint for warnings */
+}
+
+/* ================================
+   STATISTICS SECTION STYLING
+   ================================ */
+
+/* Container for statistics display */
+.statisticsSection {
+    display: flex; /* Use flexbox for horizontal layout */
+    justify-content: space-around; /* Distribute items evenly */
+    padding: 20px; /* Space inside statistics section */
+    background: #f8f9fa; /* Light gray background */
+    border-bottom: 1px solid #e9ecef; /* Subtle bottom border */
+}
+
+/* Individual statistic item container */
+.statisticItem {
+    text-align: center; /* Center-align statistic content */
+}
+
+/* Large numbers displaying statistics */
+.statisticNumber {
+    font-size: 2em; /* Large, prominent numbers */
+    font-weight: bold; /* Bold numbers for emphasis */
+    color: #667eea; /* Match app's primary color */
+    transition: all 0.3s ease; /* Smooth number changes */
+}
+
+/* Labels describing what each statistic represents */
+.statisticLabel {
+    color: #6c757d; /* Muted gray color for labels */
+    font-size: 0.9em; /* Slightly smaller than normal text */
+}
+
+/* ================================
+   TASK INPUT SECTION STYLING
+   ================================ */
+
+/* Section where users input new tasks */
+.taskInputSection {
+    padding: 30px; /* Generous padding for better spacing */
+    border-bottom: 1px solid #e9ecef; /* Separate from tasks section */
+}
+
+/* Container for input elements arranged horizontally */
+.inputGroupContainer {
+    display: flex; /* Use flexbox for horizontal layout */
+    gap: 15px; /* Space between input elements */
+    margin-bottom: 15px; /* Space below input group */
+}
+
+/* Text input field for task description */
+.taskDescriptionInput {
+    flex: 1; /* Take up remaining space in flex container */
+    padding: 15px; /* Space inside input field */
+    border: 2px solid #e9ecef; /* Light border around input */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1em; /* Standard font size */
+    transition: border-color 0.3s; /* Smooth transition for focus effect */
+}
+
+/* Input field styling when focused (clicked/selected) */
+.taskDescriptionInput:focus {
+    outline: none; /* Remove default browser outline */
+    border-color: #667eea; /* Change border color to app's primary color */
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Subtle focus shadow */
+}
+
+/* Dropdown selector for task priority */
+.taskPrioritySelector {
+    padding: 15px; /* Space inside dropdown */
+    border: 2px solid #e9ecef; /* Matching border with input */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1em; /* Standard font size */
+    min-width: 120px; /* Minimum width to prevent cramping */
+    background-color: white; /* Ensure white background */
+    cursor: pointer; /* Show pointer cursor */
+}
+
+/* Button to add new tasks */
+.addTaskButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient background */
+    color: white; /* White text for contrast */
+    border: none; /* Remove default button border */
+    padding: 15px 25px; /* Space inside button */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 1em; /* Standard font size */
+    cursor: pointer; /* Show pointer cursor on hover */
+    transition: transform 0.2s; /* Smooth hover animation */
+    font-weight: 500; /* Slightly bold text */
+}
+
+/* Button hover effect */
+.addTaskButton:hover {
+    transform: translateY(-2px); /* Lift button slightly on hover */
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3); /* Add shadow on hover */
+}
+
+/* Button active state */
+.addTaskButton:active {
+    transform: translateY(0); /* Return to normal position when clicked */
+}
+
+/* ================================
+   FILTER BUTTONS STYLING
+   ================================ */
+
+/* Container for filter buttons */
+.filterButtonsContainer {
+    display: flex; /* Horizontal layout for filter buttons */
+    gap: 10px; /* Space between buttons */
+    margin-top: 15px; /* Space above filter buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+}
+
+/* Individual filter button styling */
+.filterButton {
+    padding: 10px 15px; /* Space inside filter buttons */
+    border: 1px solid #667eea; /* Border matching app's primary color */
+    background: white; /* White background by default */
+    color: #667eea; /* Text color matching primary color */
+    border-radius: 25px; /* Fully rounded corners for pill shape */
+    cursor: pointer; /* Show pointer cursor */
+    transition: all 0.3s; /* Smooth transitions for all properties */
+    font-size: 0.9em; /* Slightly smaller font */
+}
+
+/* Active filter button (currently selected filter) */
+.filterButton.activeFilter {
+    background: #667eea; /* Primary color background */
+    color: white; /* White text for contrast */
+    transform: scale(1.05); /* Slightly larger when active */
+}
+
+/* Filter button hover effect */
+.filterButton:hover {
+    background: #667eea; /* Primary color on hover */
+    color: white; /* White text on hover */
+    transform: translateY(-1px); /* Slight lift on hover */
+}
+
+/* ================================
+   PROGRESS BAR STYLING
+   ================================ */
+
+/* Container for progress bar */
+.progressBarContainer {
+    width: 100%; /* Full width of parent container */
+    height: 10px; /* Height of progress bar */
+    background: #e9ecef; /* Light gray background */
+    border-radius: 5px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow for clean look */
+    margin-top: 15px; /* Space above progress bar */
+}
+
+/* Filled portion of progress bar */
+.progressBarFill {
+    height: 100%; /* Full height of container */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient fill */
+    transition: width 0.3s; /* Smooth animation when progress changes */
+    width: 0%; /* Start at 0% (will be updated by JavaScript) */
+    border-radius: 5px; /* Matching rounded corners */
+}
+
+/* ================================
+   TASKS DISPLAY SECTION STYLING
+   ================================ */
+
+/* Main section containing all task items */
+.tasksDisplaySection {
+    padding: 30px; /* Space inside tasks section */
+    min-height: 300px; /* Minimum height to prevent layout jumping */
+}
+
+/* Individual task item container */
+.taskItem {
+    display: flex; /* Horizontal layout for task elements */
+    align-items: center; /* Vertically center task elements */
+    padding: 20px; /* Space inside each task */
+    margin-bottom: 15px; /* Space between tasks */
+    background: #f8f9fa; /* Light gray background */
+    border-radius: 15px; /* Rounded corners */
+    border-left: 5px solid; /* Colored left border (color set by priority) */
+    transition: all 0.3s; /* Smooth transitions for hover effects */
+    animation: slideInFromLeft 0.3s ease-out; /* Slide-in animation for new tasks */
+}
+
+/* Animation for new tasks sliding in from left */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0; /* Start invisible */
+        transform: translateX(-20px); /* Start 20px to the left */
+    }
+    to {
+        opacity: 1; /* End fully visible */
+        transform: translateX(0); /* End at normal position */
+    }
+}
+
+/* Task item hover effect */
+.taskItem:hover {
+    transform: translateY(-2px); /* Lift task slightly on hover */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Add shadow on hover */
+}
+
+/* Completed task styling */
+.taskItem.completedTask {
+    opacity: 0.7; /* Make completed tasks more transparent */
+    text-decoration: line-through; /* Strike through completed tasks */
+}
+
+/* Task priority border colors */
+.taskItem.highPriorityTask {
+    border-left-color: #dc3545; /* Red border for high priority */
+}
+
+.taskItem.mediumPriorityTask {
+    border-left-color: #ffc107; /* Yellow border for medium priority */
+}
+
+.taskItem.lowPriorityTask {
+    border-left-color: #28a745; /* Green border for low priority */
+}
+
+/* Checkbox for marking tasks complete */
+.taskCompletionCheckbox {
+    margin-right: 15px; /* Space between checkbox and task content */
+    transform: scale(1.2); /* Make checkbox slightly larger */
+    cursor: pointer; /* Show pointer cursor */
+}
+
+/* Container for task text content */
+.taskContentContainer {
+    flex: 1; /* Take up remaining space in task item */
+}
+
+/* Main task description text */
+.taskDescriptionText {
+    font-size: 1.1em; /* Slightly larger than normal text */
+    margin-bottom: 5px; /* Space below task description */
+    font-weight: 500; /* Slightly bold text */
+}
+
+/* Task metadata (priority badge, creation date) */
+.taskMetadataContainer {
+    font-size: 0.9em; /* Smaller text for metadata */
+    color: #6c757d; /* Muted gray color */
+}
+
+/* Priority badge styling */
+.priorityBadge {
+    padding: 5px 10px; /* Space inside badge */
+    border-radius: 15px; /* Rounded corners */
+    font-size: 0.8em; /* Small text */
+    font-weight: bold; /* Bold text */
+    margin-right: 10px; /* Space after badge */
+}
+
+/* High priority badge coloring */
+.priorityBadgeHigh {
+    background: #ffebee; /* Light red background */
+    color: #c62828; /* Dark red text */
+}
+
+/* Medium priority badge coloring */
+.priorityBadgeMedium {
+    background: #fff8e1; /* Light yellow background */
+    color: #f57f17; /* Dark yellow text */
+}
+
+/* Low priority badge coloring */
+.priorityBadgeLow {
+    background: #e8f5e8; /* Light green background */
+    color: #2e7d32; /* Dark green text */
+}
+
+/* Firebase sync indicators */
+.firebaseSync {
+    background: #e3f2fd; /* Light blue background */
+    color: #1976d2; /* Blue text */
+    padding: 2px 6px; /* Small padding */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 0.75em; /* Very small text */
+    margin-left: 8px; /* Space before indicator */
+}
+
+.localSync {
+    background: #fff3e0; /* Light orange background */
+    color: #f57c00; /* Orange text */
+    padding: 2px 6px; /* Small padding */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 0.75em; /* Very small text */
+    margin-left: 8px; /* Space before indicator */
+}
+
+/* Delete button for removing tasks */
+.deleteTaskButton {
+    background: #dc3545; /* Red background */
+    color: white; /* White text */
+    border: none; /* No border */
+    padding: 8px 12px; /* Space inside button */
+    border-radius: 8px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    transition: all 0.3s; /* Smooth transitions */
+    font-size: 0.9em; /* Slightly smaller text */
+}
+
+/* Delete button hover effect */
+.deleteTaskButton:hover {
+    background: #c82333; /* Darker red on hover */
+    transform: scale(1.05); /* Slightly larger on hover */
+}
+
+/* ================================
+   MESSAGE STYLING
+   ================================ */
+
+/* Message shown when no tasks exist */
+.noTasksMessage {
+    text-align: center; /* Center the message */
+    padding: 50px; /* Large padding for emphasis */
+    color: #6c757d; /* Muted gray color */
+    font-size: 1.2em; /* Larger text */
+}
+
+/* Loading message while Firebase loads data */
+.loadingMessage {
+    text-align: center; /* Center the message */
+    padding: 50px; /* Large padding for emphasis */
+    color: #667eea; /* App primary color */
+    font-size: 1.2em; /* Larger text */
+    animation: pulse 2s infinite; /* Pulsing animation */
+}
+
+/* Pulsing animation for loading state */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ================================
+   FOOTER SECTION STYLING
+   ================================ */
+
+/* Application footer */
+.applicationFooter {
+    text-align: center; /* Center footer text */
+    padding: 20px; /* Space inside footer */
+    background: #f8f9fa; /* Light gray background */
+    color: #6c757d; /* Muted text color */
+    font-size: 0.9em; /* Smaller text */
+    border-top: 1px solid #e9ecef; /* Top border to separate from content */
+}
+
+.applicationFooter p {
+    margin-bottom: 5px; /* Space between footer paragraphs */
+}
+
+.applicationFooter p:last-child {
+    margin-bottom: 0; /* No margin on last paragraph */
+}
+
+/* ================================
+   UTILITY CLASSES
+   ================================ */
+
+/* Hide elements (useful for JavaScript show/hide) */
+.hidden {
+    display: none !important;
+}
+
+/* Fade in animation */
+.fadeIn {
+    animation: fadeInAnimation 0.5s ease-in;
+}
+
+@keyframes fadeInAnimation {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Shake animation for errors */
+.shake {
+    animation: shakeAnimation 0.5s ease-in-out;
+}
+
+@keyframes shakeAnimation {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ================================
+   RESPONSIVE DESIGN FOR MOBILE
+   ================================ */
+
+/* Media query for tablets and mobile devices */
+@media (max-width: 768px) {
+    
+    /* Stack input elements vertically on small screens */
+    .inputGroupContainer {
+        flex-direction: column; /* Change from horizontal to vertical layout */
+    }
+    
+    /* Stack statistics vertically on small screens */
+    .statisticsSection {
+        flex-direction: column; /* Change from horizontal to vertical layout */
+        gap: 15px; /* Add space between stacked statistics */
+    }
+    
+    /* Allow filter buttons to wrap on small screens */
+    .filterButtonsContainer {
+        flex-wrap: wrap; /* Allow buttons to wrap to next line */
+        justify-content: center; /* Center buttons on mobile */
+    }
+    
+    /* Reduce padding on small screens */
+    body {
+        padding: 10px; /* Less padding on mobile */
+    }
+    
+    /* Smaller title on mobile */
+    .mainTitle {
+        font-size: 2em; /* Smaller title for mobile */
+    }
+    
+    /* Reduce section padding on mobile */
+    .taskInputSection,
+    .tasksDisplaySection {
+        padding: 20px; /* Less padding on mobile */
+    }
+    
+    /* Adjust task items for mobile */
+    .taskItem {
+        padding: 15px; /* Less padding inside tasks */
+    }
+    
+    /* Smaller text on mobile for better fit */
+    .taskDescriptionText {
+        font-size: 1em; /* Normal size text on mobile */
+    }
+    
+    /* Stack task content on very small screens */
+    @media (max-width: 480px) {
+        .taskItem {
+            flex-direction: column; /* Stack vertically on very small screens */
+            align-items: flex-start; /* Align to left */
+        }
+        
+        .taskCompletionCheckbox {
+            margin-bottom: 10px; /* Space below checkbox when stacked */
+            margin-right: 0; /* Remove right margin when stacked */
+        }
+        
+        .deleteTaskButton {
+            margin-top: 10px; /* Space above delete button when stacked */
+            align-self: flex-end; /* Align delete button to right */
+        }
+    }
+}
+
+/* ================================
+   PRINT STYLES (OPTIONAL)
+   ================================ */
+
+/* Styles for when users print the task list */
+@media print {
+    body {
+        background: white; /* White background for printing */
+        padding: 0; /* No padding for print */
+    }
+    
+    .applicationContainer {
+        box-shadow: none; /* Remove shadow for print */
+        border-radius: 0; /* Remove rounded corners for print */
+    }
+    
+    .headerSection {
+        background: #667eea !important; /* Ensure header prints with color */
+        -webkit-print-color-adjust: exact; /* Force color printing */
+        print-color-adjust: exact; /* Force color printing */
+    }
+    
+    .addTaskButton,
+    .filterButtonsContainer,
+    .deleteTaskButton {
+        display: none; /* Hide interactive elements in print */
+    }
+    
+    .taskItem {
+        break-inside: avoid; /* Prevent task items from breaking across pages */
+        margin-bottom: 10px; /* Less spacing in print */
+    }
+}
