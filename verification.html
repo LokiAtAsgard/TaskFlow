@@ -217,11 +217,13 @@
                         window.location.href = 'index.html';
                     }
 
-                    // Listen for verification status changes
+                    // Listen for verification status changes in real-time
                     userRef.child('verificationStatus').on('value', (statusSnapshot) => {
                         if (statusSnapshot.val() === 'verified') {
-                            alert('Your account has been verified! Redirecting to TaskFlow...');
+                            alert('🎉 Your account has been verified! Redirecting to TaskFlow...');
                             window.location.href = 'index.html';
+                        } else if (statusSnapshot.val() === 'rejected') {
+                            alert('❌ Your verification was rejected. Please contact support for more information.');
                         }
                     });
                 }
@@ -233,10 +235,15 @@
 
         // Handle logout
         function handleLogout() {
-            auth.signOut().then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error('Logout error:', error);
-            });
+            if (confirm('Are you sure you want to logout?')) {
+                auth.signOut().then(() => {
+                    window.location.href = 'login.html';
+                }).catch((error) => {
+                    console.error('Logout error:', error);
+                    alert('Error logging out. Please try again.');
+                });
+            }
         }
     </script>
+</body>
+</html>

@@ -151,8 +151,10 @@
         .file-name {
             color: #667eea;
             font-weight: 500;
-            margin-top: 5px;
+            margin-top: 10px;
             font-size: 0.9em;
+            display: block;
+            text-align: center;
         }
 
         .submit-btn {
@@ -367,8 +369,8 @@
                         <input type="file" id="studentIdFile" accept="image/*,.pdf" onchange="handleFileSelect(event)" required />
                         <label for="studentIdFile" class="file-upload-label" id="fileLabel">
                             📎 Click to upload your Student ID
-                            <div class="file-name" id="fileName"></div>
                         </label>
+                        <span class="file-name" id="fileName"></span>
                     </div>
                     <p class="helper-text">Accepted formats: JPG, PNG, PDF (Max 5MB)</p>
                 </div>
