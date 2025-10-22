@@ -1,0 +1,612 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+            .auth-header h1 {
+                font-size: 2.5em;
+                margin-bottom: 10px;
+            }
+
+            .auth-header p {
+                opacity: 0.9;
+                font-size: 1.1em;
+            }
+
+        .auth-body {
+            padding: 40px 30px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            cursor: pointer;
+            color: #6c757d;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+            .auth-tab.active {
+                color: #667eea;
+                border-bottom-color: #667eea;
+                font-weight: 600;
+            }
+
+        .auth-form {
+            display: none;
+        }
+
+            .auth-form.active {
+                display: block;
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: #495057;
+                font-weight: 500;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 15px;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                font-size: 1em;
+                transition: border-color 0.3s;
+            }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #667eea;
+                    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                }
+
+                .form-group input::placeholder {
+                    color: #adb5bd;
+                }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+            .file-upload-wrapper input[type=file] {
+                position: absolute;
+                left: -9999px;
+            }
+
+        .file-upload-label {
+            display: block;
+            padding: 15px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+            .file-upload-label:hover {
+                background: #e9ecef;
+                border-color: #764ba2;
+            }
+
+            .file-upload-label.has-file {
+                border-style: solid;
+                background: #e7f3ff;
+            }
+
+        .file-name {
+            color: #667eea;
+            font-weight: 500;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 10px;
+        }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            }
+
+            .submit-btn:active {
+                transform: translateY(0);
+            }
+
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+
+            .divider::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: #e9ecef;
+            }
+
+            .divider span {
+                background: white;
+                padding: 0 15px;
+                position: relative;
+                color: #6c757d;
+                font-size: 0.9em;
+            }
+
+        .google-btn {
+            width: 100%;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+            .google-btn:hover {
+                border-color: #667eea;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .helper-text {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8d7da;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 0.9em;
+            margin-top: 10px;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #e7f3ff;
+            color: #0066cc;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .pending-verification {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .verified {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        @media (max-width: 480px) {
+            .auth-header h1 {
+                font-size: 2em;
+            }
+
+            .auth-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>TaskFlow</h1>
+            <p>Student Task Management System</p>
+        </div>
+
+        <div class="auth-body">
+            <!-- Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="student@university.edu" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required />
+                </div>
+
+                <button type="submit" class="submit-btn">Login</button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="error-message" id="loginError"></div>
+                <div class="success-message" id="loginSuccess"></div>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Juan Dela Cruz" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="signupEmail" placeholder="student@university.edu" required />
+                    <p class="helper-text">Use your university email address</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Student ID Number</label>
+                    <input type="text" id="signupStudentId" placeholder="2024-00000" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Minimum 6 characters" required minlength="6" />
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Student ID (for verification)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="studentIdFile" accept="image/*,.pdf" onchange="handleFileSelect(event)" required />
+                        <label for="studentIdFile" class="file-upload-label" id="fileLabel">
+                            📎 Click to upload your Student ID
+                            <div class="file-name" id="fileName"></div>
+                        </label>
+                    </div>
+                    <p class="helper-text">Accepted formats: JPG, PNG, PDF (Max 5MB)</p>
+                </div>
+
+                <button type="submit" class="submit-btn">Create Account</button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+                    <svg class="google-icon" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Sign up with Google
+                </button>
+
+                <div class="error-message" id="signupError"></div>
+                <div class="success-message" id="signupSuccess"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
+            authDomain: "taskflow-aa2ec.firebaseapp.com",
+            databaseURL: "https://taskflow-aa2ec-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "taskflow-aa2ec",
+            storageBucket: "taskflow-aa2ec.firebasestorage.app",
+            messagingSenderId: "1002898388073",
+            appId: "1:1002898388073:web:1ae1aa8957ae3572ab9ef8",
+            measurementId: "G-4NXTRCZQST"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        let selectedFile = null;
+
+        // Tab Switching
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('signupForm').classList.add('active');
+            }
+
+            clearMessages();
+        }
+
+        // File Selection Handler
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('signupError', 'File size must be less than 5MB');
+                    event.target.value = '';
+                    return;
+                }
+
+                selectedFile = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileLabel').classList.add('has-file');
+            }
+        }
+
+        // Handle Login
+        async function handleLogin(event) {
+            event.preventDefault();
+            clearMessages();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Check verification status
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                const userData = snapshot.val();
+
+                if (userData && userData.verificationStatus === 'pending') {
+                    showSuccess('loginSuccess', 'Login successful! Your account is pending verification.');
+                    setTimeout(() => {
+                        window.location.href = 'verification-pending.html';
+                    }, 2000);
+                } else if (userData && userData.verificationStatus === 'verified') {
+                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    showError('loginError', 'Account verification status unknown. Please contact support.');
+                }
+            } catch (error) {
+                showError('loginError', getErrorMessage(error.code));
+            }
+        }
+
+        // Handle Signup
+        async function handleSignup(event) {
+            event.preventDefault();
+            clearMessages();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const studentId = document.getElementById('signupStudentId').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (!selectedFile) {
+                showError('signupError', 'Please upload your Student ID');
+                return;
+            }
+
+            try {
+                // Create user account
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+
+                // Upload Student ID file
+                const fileRef = storage.ref('student-ids/' + user.uid + '/' + selectedFile.name);
+                await fileRef.put(selectedFile);
+                const fileURL = await fileRef.getDownloadURL();
+
+                // Save user data
+                await database.ref('users/' + user.uid).set({
+                    name: name,
+                    email: email,
+                    studentId: studentId,
+                    studentIdFileURL: fileURL,
+                    verificationStatus: 'pending',
+                    createdAt: Date.now()
+                });
+
+                showSuccess('signupSuccess', 'Account created! Please wait for admin verification.');
+
+                setTimeout(() => {
+                    window.location.href = 'verification-pending.html';
+                }, 2000);
+
+            } catch (error) {
+                showError('signupError', getErrorMessage(error.code));
+            }
+        }
+
+        // Google Sign In
+        async function handleGoogleSignIn() {
+            clearMessages();
+            const provider = new firebase.auth.GoogleAuthProvider();
+
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+
+                // Check if user exists in database
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+
+                if (snapshot.exists()) {
+                    // Existing user
+                    const userData = snapshot.val();
+                    if (userData.verificationStatus === 'verified') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'verification-pending.html';
+                    }
+                } else {
+                    // New user - need to complete profile
+                    window.location.href = 'complete-profile.html';
+                }
+            } catch (error) {
+                showError('loginError', getErrorMessage(error.code));
+            }
+        }
+
+        // Helper Functions
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+        }
+
+        function showSuccess(elementId, message) {
+            const successEl = document.getElementById(elementId);
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.style.display = 'none';
+            });
+        }
+
+        function getErrorMessage(errorCode) {
+            const errorMessages = {
+                'auth/email-already-in-use': 'This email is already registered.',
+                'auth/invalid-email': 'Invalid email address.',
+                'auth/weak-password': 'Password should be at least 6 characters.',
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/wrong-password': 'Incorrect password.',
+                'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
+                'auth/network-request-failed': 'Network error. Please check your connection.'
+            };
+            return errorMessages[errorCode] || 'An error occurred. Please try again.';
+        }
+
+        // Check if user is already logged in
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                const userData = snapshot.val();
+
+                if (userData && userData.verificationStatus === 'verified') {
+                    window.location.href = 'index.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

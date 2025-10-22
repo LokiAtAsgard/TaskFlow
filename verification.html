@@ -1,0 +1,242 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow - Verification Pending</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .pending-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .pending-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background: #fff3cd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #6c757d;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+            .info-box h3 {
+                color: #667eea;
+                margin-bottom: 15px;
+                font-size: 1.1em;
+            }
+
+            .info-box ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .info-box li {
+                padding: 8px 0;
+                color: #495057;
+                padding-left: 25px;
+                position: relative;
+            }
+
+                .info-box li::before {
+                    content: "✓";
+                    position: absolute;
+                    left: 0;
+                    color: #28a745;
+                    font-weight: bold;
+                }
+
+        .logout-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+            .logout-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+            }
+
+        .user-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+            .user-info strong {
+                color: #0066cc;
+            }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .pending-icon {
+            animation: pulse 2s infinite;
+        }
+    </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+    <div class="pending-container">
+        <div class="pending-icon">⏳</div>
+
+        <h1>Verification Pending</h1>
+
+        <div class="status-badge">Awaiting Admin Approval</div>
+
+        <p>Thank you for registering with TaskFlow! Your account has been created successfully.</p>
+
+        <div class="user-info" id="userInfo">
+            <strong>Email:</strong> <span id="userEmail">Loading...</span><br>
+            <strong>Student ID:</strong> <span id="userStudentId">Loading...</span>
+        </div>
+
+        <p>An administrator will review your Student ID and verify your account within 24-48 hours.</p>
+
+        <div class="info-box">
+            <h3>What happens next?</h3>
+            <ul>
+                <li>Admin reviews your Student ID document</li>
+                <li>You'll receive an email notification once verified</li>
+                <li>After verification, you can access all TaskFlow features</li>
+                <li>Check back later or wait for the email confirmation</li>
+            </ul>
+        </div>
+
+        <p style="font-size: 0.9em; color: #6c757d;">
+            If you have any questions, please contact support at <strong>support@taskflow.edu</strong>
+        </p>
+
+        <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
+            authDomain: "taskflow-aa2ec.firebaseapp.com",
+            databaseURL: "https://taskflow-aa2ec-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "taskflow-aa2ec",
+            storageBucket: "taskflow-aa2ec.firebasestorage.app",
+            messagingSenderId: "1002898388073",
+            appId: "1:1002898388073:web:1ae1aa8957ae3572ab9ef8",
+            measurementId: "G-4NXTRCZQST"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        // Check authentication and load user data
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // Load user data
+                const userRef = database.ref('users/' + user.uid);
+                const snapshot = await userRef.once('value');
+                const userData = snapshot.val();
+
+                if (userData) {
+                    document.getElementById('userEmail').textContent = userData.email;
+                    document.getElementById('userStudentId').textContent = userData.studentId;
+
+                    // Check if user is already verified
+                    if (userData.verificationStatus === 'verified') {
+                        window.location.href = 'index.html';
+                    }
+
+                    // Listen for verification status changes
+                    userRef.child('verificationStatus').on('value', (statusSnapshot) => {
+                        if (statusSnapshot.val() === 'verified') {
+                            alert('Your account has been verified! Redirecting to TaskFlow...');
+                            window.location.href = 'index.html';
+                        }
+                    });
+                }
+            } else {
+                // Not logged in, redirect to login page
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Handle logout
+        function handleLogout() {
+            auth.signOut().then(() => {
+                window.location.href = 'login.html';
+            }).catch((error) => {
+                console.error('Logout error:', error);
+            });
+        }
+    </script>
