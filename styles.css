@@ -75,18 +75,18 @@ body {
     transition: all 0.3s ease; /* Smooth transitions */
 }
 
-/* Firebase status color variations */
-.firebaseStatus.status-success {
-    background: rgba(40, 167, 69, 0.3); /* Green tint for success */
-}
+    /* Firebase status color variations */
+    .firebaseStatus.status-success {
+        background: rgba(40, 167, 69, 0.3); /* Green tint for success */
+    }
 
-.firebaseStatus.status-error {
-    background: rgba(220, 53, 69, 0.3); /* Red tint for errors */
-}
+    .firebaseStatus.status-error {
+        background: rgba(220, 53, 69, 0.3); /* Red tint for errors */
+    }
 
-.firebaseStatus.status-warning {
-    background: rgba(255, 193, 7, 0.3); /* Yellow tint for warnings */
-}
+    .firebaseStatus.status-warning {
+        background: rgba(255, 193, 7, 0.3); /* Yellow tint for warnings */
+    }
 
 /* ================================
    STATISTICS SECTION STYLING
@@ -147,12 +147,12 @@ body {
     transition: border-color 0.3s; /* Smooth transition for focus effect */
 }
 
-/* Input field styling when focused (clicked/selected) */
-.taskDescriptionInput:focus {
-    outline: none; /* Remove default browser outline */
-    border-color: #667eea; /* Change border color to app's primary color */
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Subtle focus shadow */
-}
+    /* Input field styling when focused (clicked/selected) */
+    .taskDescriptionInput:focus {
+        outline: none; /* Remove default browser outline */
+        border-color: #667eea; /* Change border color to app's primary color */
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Subtle focus shadow */
+    }
 
 /* Dropdown selector for task priority */
 .taskPrioritySelector {
@@ -178,16 +178,16 @@ body {
     font-weight: 500; /* Slightly bold text */
 }
 
-/* Button hover effect */
-.addTaskButton:hover {
-    transform: translateY(-2px); /* Lift button slightly on hover */
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3); /* Add shadow on hover */
-}
+    /* Button hover effect */
+    .addTaskButton:hover {
+        transform: translateY(-2px); /* Lift button slightly on hover */
+        box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3); /* Add shadow on hover */
+    }
 
-/* Button active state */
-.addTaskButton:active {
-    transform: translateY(0); /* Return to normal position when clicked */
-}
+    /* Button active state */
+    .addTaskButton:active {
+        transform: translateY(0); /* Return to normal position when clicked */
+    }
 
 /* ================================
    FILTER BUTTONS STYLING
@@ -213,19 +213,19 @@ body {
     font-size: 0.9em; /* Slightly smaller font */
 }
 
-/* Active filter button (currently selected filter) */
-.filterButton.activeFilter {
-    background: #667eea; /* Primary color background */
-    color: white; /* White text for contrast */
-    transform: scale(1.05); /* Slightly larger when active */
-}
+    /* Active filter button (currently selected filter) */
+    .filterButton.activeFilter {
+        background: #667eea; /* Primary color background */
+        color: white; /* White text for contrast */
+        transform: scale(1.05); /* Slightly larger when active */
+    }
 
-/* Filter button hover effect */
-.filterButton:hover {
-    background: #667eea; /* Primary color on hover */
-    color: white; /* White text on hover */
-    transform: translateY(-1px); /* Slight lift on hover */
-}
+    /* Filter button hover effect */
+    .filterButton:hover {
+        background: #667eea; /* Primary color on hover */
+        color: white; /* White text on hover */
+        transform: translateY(-1px); /* Slight lift on hover */
+    }
 
 /* ================================
    PROGRESS BAR STYLING
@@ -268,10 +268,44 @@ body {
     margin-bottom: 15px; /* Space between tasks */
     background: #f8f9fa; /* Light gray background */
     border-radius: 15px; /* Rounded corners */
-    border-left: 5px solid; /* Colored left border (color set by priority) */
+    border-left: 5px solid #667eea; /* Colored left border */
     transition: all 0.3s; /* Smooth transitions for hover effects */
     animation: slideInFromLeft 0.3s ease-out; /* Slide-in animation for new tasks */
 }
+
+    /* Checkbox styling within task items */
+    .taskItem input[type="checkbox"] {
+        margin-right: 15px; /* Space between checkbox and text */
+        transform: scale(1.2); /* Make checkbox slightly larger */
+        cursor: pointer; /* Show pointer cursor */
+        flex-shrink: 0; /* Prevent checkbox from shrinking */
+    }
+
+    /* Task text content */
+    .taskItem span {
+        flex: 1; /* Take up remaining space */
+        margin-right: 15px; /* Space before delete button */
+    }
+
+    /* Delete button styling within task items */
+    .taskItem button {
+        margin-left: auto; /* Push delete button to the right */
+        background: #dc3545; /* Red background */
+        color: white; /* White text */
+        border: none; /* No border */
+        padding: 8px 12px; /* Space inside button */
+        border-radius: 8px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+        transition: all 0.3s; /* Smooth transitions */
+        font-size: 0.9em; /* Slightly smaller text */
+        flex-shrink: 0; /* Prevent button from shrinking */
+    }
+
+        /* Delete button hover effect */
+        .taskItem button:hover {
+            background: #c82333; /* Darker red on hover */
+            transform: scale(1.05); /* Slightly larger on hover */
+        }
 
 /* Animation for new tasks sliding in from left */
 @keyframes slideInFromLeft {
@@ -279,6 +313,7 @@ body {
         opacity: 0; /* Start invisible */
         transform: translateX(-20px); /* Start 20px to the left */
     }
+
     to {
         opacity: 1; /* End fully visible */
         transform: translateX(0); /* End at normal position */
@@ -292,12 +327,27 @@ body {
 }
 
 /* Completed task styling */
+.taskItem.completed {
+    opacity: 0.7; /* Make completed tasks more transparent */
+}
+
+    .taskItem.completed span {
+        text-decoration: line-through; /* Strike through completed tasks */
+    }
+
+/* Priority stars styling */
+.priorityStars {
+    color: gold;
+    font-size: 1.1em;
+    margin-right: 12px; /* Spacing between stars and task text */
+}
+
+/* Task priority border colors */
 .taskItem.completedTask {
     opacity: 0.7; /* Make completed tasks more transparent */
     text-decoration: line-through; /* Strike through completed tasks */
 }
 
-/* Task priority border colors */
 .taskItem.highPriorityTask {
     border-left-color: #dc3545; /* Red border for high priority */
 }
@@ -393,11 +443,11 @@ body {
     font-size: 0.9em; /* Slightly smaller text */
 }
 
-/* Delete button hover effect */
-.deleteTaskButton:hover {
-    background: #c82333; /* Darker red on hover */
-    transform: scale(1.05); /* Slightly larger on hover */
-}
+    /* Delete button hover effect */
+    .deleteTaskButton:hover {
+        background: #c82333; /* Darker red on hover */
+        transform: scale(1.05); /* Slightly larger on hover */
+    }
 
 /* ================================
    MESSAGE STYLING
@@ -422,8 +472,13 @@ body {
 
 /* Pulsing animation for loading state */
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
 }
 
 /* ================================
@@ -440,13 +495,13 @@ body {
     border-top: 1px solid #e9ecef; /* Top border to separate from content */
 }
 
-.applicationFooter p {
-    margin-bottom: 5px; /* Space between footer paragraphs */
-}
+    .applicationFooter p {
+        margin-bottom: 5px; /* Space between footer paragraphs */
+    }
 
-.applicationFooter p:last-child {
-    margin-bottom: 0; /* No margin on last paragraph */
-}
+        .applicationFooter p:last-child {
+            margin-bottom: 0; /* No margin on last paragraph */
+        }
 
 /* ================================
    UTILITY CLASSES
@@ -463,8 +518,13 @@ body {
 }
 
 @keyframes fadeInAnimation {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* Shake animation for errors */
@@ -473,9 +533,17 @@ body {
 }
 
 @keyframes shakeAnimation {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
 }
 
 /* ================================
@@ -484,62 +552,62 @@ body {
 
 /* Media query for tablets and mobile devices */
 @media (max-width: 768px) {
-    
+
     /* Stack input elements vertically on small screens */
     .inputGroupContainer {
         flex-direction: column; /* Change from horizontal to vertical layout */
     }
-    
+
     /* Stack statistics vertically on small screens */
     .statisticsSection {
         flex-direction: column; /* Change from horizontal to vertical layout */
         gap: 15px; /* Add space between stacked statistics */
     }
-    
+
     /* Allow filter buttons to wrap on small screens */
     .filterButtonsContainer {
         flex-wrap: wrap; /* Allow buttons to wrap to next line */
         justify-content: center; /* Center buttons on mobile */
     }
-    
+
     /* Reduce padding on small screens */
     body {
         padding: 10px; /* Less padding on mobile */
     }
-    
+
     /* Smaller title on mobile */
     .mainTitle {
         font-size: 2em; /* Smaller title for mobile */
     }
-    
+
     /* Reduce section padding on mobile */
     .taskInputSection,
     .tasksDisplaySection {
         padding: 20px; /* Less padding on mobile */
     }
-    
+
     /* Adjust task items for mobile */
     .taskItem {
         padding: 15px; /* Less padding inside tasks */
     }
-    
+
     /* Smaller text on mobile for better fit */
     .taskDescriptionText {
         font-size: 1em; /* Normal size text on mobile */
     }
-    
+
     /* Stack task content on very small screens */
     @media (max-width: 480px) {
         .taskItem {
             flex-direction: column; /* Stack vertically on very small screens */
             align-items: flex-start; /* Align to left */
         }
-        
+
         .taskCompletionCheckbox {
             margin-bottom: 10px; /* Space below checkbox when stacked */
             margin-right: 0; /* Remove right margin when stacked */
         }
-        
+
         .deleteTaskButton {
             margin-top: 10px; /* Space above delete button when stacked */
             align-self: flex-end; /* Align delete button to right */
@@ -557,32 +625,26 @@ body {
         background: white; /* White background for printing */
         padding: 0; /* No padding for print */
     }
-    
+
     .applicationContainer {
         box-shadow: none; /* Remove shadow for print */
         border-radius: 0; /* Remove rounded corners for print */
     }
-    
+
     .headerSection {
         background: #667eea !important; /* Ensure header prints with color */
         -webkit-print-color-adjust: exact; /* Force color printing */
         print-color-adjust: exact; /* Force color printing */
     }
-    
+
     .addTaskButton,
     .filterButtonsContainer,
     .deleteTaskButton {
         display: none; /* Hide interactive elements in print */
     }
-    
+
     .taskItem {
         break-inside: avoid; /* Prevent task items from breaking across pages */
         margin-bottom: 10px; /* Less spacing in print */
     }
-}
-
-.priorityStars {
-    color: gold;
-    font-size: 1.1em;
-    margin-right: 6px;
 }
