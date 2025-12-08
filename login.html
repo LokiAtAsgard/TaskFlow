@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -541,14 +541,11 @@
             try {
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
-                const userRef = database.ref('users/' + user.uid);
-                const snapshot = await userRef.once('value');
-                const userData = snapshot.val();
 
-                if (userData) {
-                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
-                    setTimeout(() => window.location.href = 'index.html', 1500);
-                }
+                // We do NOT block redirect based on database snapshot anymore
+                showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                setTimeout(() => window.location.href = 'index.html', 1500);
+
             } catch (error) {
                 showError('loginError', getErrorMessage(error.code));
             }
@@ -642,13 +639,10 @@
             return errorMessages[errorCode] || errorCode;
         }
 
-        // Auth Listener
+        // Auth Listener - Auto-redirect if already logged in
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                // Optional: Check if already verified and redirect if on login page
-                // Commented out to prevent loops during development
-                // const snapshot = await database.ref('users/' + user.uid).once('value');
-                // if (snapshot.val()) window.location.href = 'index.html';
+                window.location.href = 'index.html';
             }
         });
     </script>
