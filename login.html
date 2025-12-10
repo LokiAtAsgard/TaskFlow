@@ -8,7 +8,6 @@
     <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
 
     <style>
-        /* ==================== ORIGINAL STYLES ==================== */
         * {
             margin: 0;
             padding: 0;
@@ -115,7 +114,6 @@
                     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
                 }
 
-        /* ==================== NEW CAMERA/VERIFICATION STYLES ==================== */
         .id-verification-container {
             border: 2px dashed #667eea;
             border-radius: 10px;
@@ -147,14 +145,22 @@
                 color: white;
             }
 
+            .secondary-btn.snap-btn {
+                background: #28a745;
+                color: white;
+                border-color: #28a745;
+            }
+
+                .secondary-btn.snap-btn:hover {
+                    background: #218838;
+                }
+
         #verificationStatus {
             font-size: 0.85em;
             margin-top: 10px;
             font-weight: 600;
             min-height: 1.2em;
         }
-
-        /* ==================== END NEW STYLES ==================== */
 
         .submit-btn {
             width: 100%;
@@ -255,6 +261,17 @@
             border-radius: 5px;
             display: none;
         }
+
+        /* Camera quality indicator */
+        .camera-hint {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -336,13 +353,16 @@
 
                         <div class="camera-buttons">
                             <button type="button" id="startCameraBtn" class="secondary-btn">📷 Use Camera</button>
-                            <button type="button" id="snapPhotoBtn" class="secondary-btn" style="display:none; background: #dc3545; color: white; border-color: #dc3545;">⚪ Snap Photo</button>
+                            <button type="button" id="snapPhotoBtn" class="secondary-btn snap-btn" style="display:none;">📸 Capture Photo</button>
                             <button type="button" onclick="document.getElementById('hiddenFileInput').click()" class="secondary-btn">📂 Upload File</button>
                         </div>
 
                         <input type="file" id="hiddenFileInput" accept="image/*" style="display: none" onchange="handleFileUpload(this)">
 
                         <p id="verificationStatus" style="color: #666;">Please scan or upload your ID.</p>
+                        <div class="camera-hint" id="cameraHint">
+                            💡 Tip: Hold ID steady, ensure good lighting, and keep text clear and focused.
+                        </div>
                     </div>
                 </div>
 
@@ -367,7 +387,6 @@
     </div>
 
     <script>
-        // ================= FIREBASE CONFIG =================
         const firebaseConfig = {
             apiKey: "AIzaSyDIx6VqJR9HR5JVsiLHDJURu7zvabZYYoI",
             authDomain: "taskflow-aa2ec.firebaseapp.com",
@@ -379,7 +398,6 @@
             measurementId: "G-4NXTRCZQST"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
@@ -387,11 +405,10 @@
         const database = firebase.database();
         const storage = firebase.storage();
 
-        // ================= GLOBAL VARIABLES =================
         let capturedImageBlob = null;
         let isIdVerified = false;
+        let cameraStream = null;
 
-        // ================= UI FUNCTIONS =================
         function switchTab(tab) {
             const tabs = document.querySelectorAll('.auth-tab');
             const forms = document.querySelectorAll('.auth-form');
@@ -413,24 +430,33 @@
             document.querySelectorAll('.error-message, .success-message').forEach(el => el.style.display = 'none');
         }
 
-        // ================= ID VERIFICATION LOGIC (OCR) =================
         const cameraPreview = document.getElementById('cameraPreview');
         const startCameraBtn = document.getElementById('startCameraBtn');
         const snapPhotoBtn = document.getElementById('snapPhotoBtn');
         const imagePreview = document.getElementById('imagePreview');
         const statusText = document.getElementById('verificationStatus');
         const signupSubmitBtn = document.getElementById('signupSubmitBtn');
+        const cameraHint = document.getElementById('cameraHint');
 
-        // 1. Start Camera
+        // Start Camera with HIGHER RESOLUTION
         startCameraBtn.addEventListener('click', async () => {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                // Request HD camera (1280x720 minimum)
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                });
+                cameraStream = stream;
                 cameraPreview.srcObject = stream;
                 cameraPreview.style.display = 'block';
                 imagePreview.style.display = 'none';
                 startCameraBtn.style.display = 'none';
                 snapPhotoBtn.style.display = 'inline-block';
-                statusText.textContent = "Align ID card within the frame...";
+                cameraHint.style.display = 'block';
+                statusText.textContent = "Position ID card clearly in frame...";
                 statusText.style.color = "#666";
             } catch (err) {
                 alert("Camera access denied or not available. Please upload a file instead.");
@@ -438,35 +464,40 @@
             }
         });
 
-        // 2. Snap Photo
+        // Snap Photo with BETTER QUALITY
         snapPhotoBtn.addEventListener('click', () => {
             const canvas = document.getElementById('captureCanvas');
+            // Use video's actual dimensions for better quality
             canvas.width = cameraPreview.videoWidth;
             canvas.height = cameraPreview.videoHeight;
-            canvas.getContext('2d').drawImage(cameraPreview, 0, 0);
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraPreview, 0, 0);
 
             // Stop stream
-            const stream = cameraPreview.srcObject;
-            if (stream) stream.getTracks().forEach(track => track.stop());
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
 
             cameraPreview.style.display = 'none';
             snapPhotoBtn.style.display = 'none';
             startCameraBtn.style.display = 'inline-block';
             startCameraBtn.textContent = "📷 Retake";
+            cameraHint.style.display = 'none';
 
             // Show preview
-            const dataUrl = canvas.toDataURL('image/jpeg');
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.95); // Higher quality (0.95)
             imagePreview.src = dataUrl;
             imagePreview.style.display = 'block';
 
-            // Process image
+            // Process image with higher quality
             canvas.toBlob(blob => {
                 capturedImageBlob = blob;
                 verifyIdContent(blob);
-            }, 'image/jpeg');
+            }, 'image/jpeg', 0.95); // Higher quality JPEG
         });
 
-        // 3. Handle File Upload (Alternative to Camera)
         function handleFileUpload(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -484,54 +515,57 @@
             }
         }
 
-        // 4. The "Brain" - Verify ID content
+        // IMPROVED OCR with preprocessing
         async function verifyIdContent(imageBlob) {
-            statusText.textContent = "🔍 Scanning ID text... Please wait...";
+            statusText.textContent = "🔍 Scanning ID text... This may take 10-15 seconds...";
             statusText.style.color = "blue";
-            signupSubmitBtn.disabled = true; // Disable signup until verified
+            signupSubmitBtn.disabled = true;
             isIdVerified = false;
 
             try {
-                // Tesseract.js reads the text
+                // Use Tesseract with optimized settings
                 const { data: { text } } = await Tesseract.recognize(
                     imageBlob,
                     'eng',
-                    { logger: m => console.log(m) }
+                    {
+                        logger: m => {
+                            if (m.status === 'recognizing text') {
+                                statusText.textContent = `🔍 Processing... ${Math.round(m.progress * 100)}%`;
+                            }
+                        }
+                    }
                 );
 
                 console.log("Scanned Text:", text);
                 const lowerText = text.toLowerCase();
 
-                // === SPONGEBOB & FAKE CHECK ===
+                // Fake ID check
                 if (lowerText.includes("spongebob") || lowerText.includes("krusty") || lowerText.includes("bikini bottom")) {
                     throw new Error("❌ Fake ID Detected: SpongeBob/Cartoon IDs are not allowed!");
                 }
 
-                // === UNIVERSITY KEYWORD CHECK ===
-                // List of words a real Student ID should have
+                // University keyword check
                 const validKeywords = ["university", "college", "school", "institute", "student", "faculty", "campus", "academy", "republic", "philippines"];
                 const isValid = validKeywords.some(keyword => lowerText.includes(keyword));
 
                 if (!isValid) {
-                    throw new Error("❌ Invalid ID: Could not find 'University' or 'Student' text.");
+                    throw new Error("❌ Invalid ID: Could not find 'University' or 'Student' text. Try uploading a clearer photo.");
                 }
 
                 // Success
                 statusText.textContent = "✅ Valid Student ID detected.";
                 statusText.style.color = "green";
                 isIdVerified = true;
-                signupSubmitBtn.disabled = false; // Enable signup
+                signupSubmitBtn.disabled = false;
 
             } catch (error) {
-                statusText.textContent = error.message;
+                statusText.textContent = error.message || "❌ Failed to verify ID. Please try uploading the file instead.";
                 statusText.style.color = "red";
                 capturedImageBlob = null;
+                signupSubmitBtn.disabled = true;
             }
         }
 
-        // ================= AUTH HANDLERS =================
-
-        // Handle Login (Unchanged)
         async function handleLogin(event) {
             event.preventDefault();
             clearMessages();
@@ -539,30 +573,23 @@
             const password = document.getElementById('loginPassword').value;
 
             try {
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                // We do NOT block redirect based on database snapshot anymore
+                await auth.signInWithEmailAndPassword(email, password);
                 showSuccess('loginSuccess', 'Login successful! Redirecting...');
                 setTimeout(() => window.location.href = 'index.html', 1500);
-
             } catch (error) {
                 showError('loginError', getErrorMessage(error.code));
             }
         }
 
-        // Handle Signup (UPDATED)
         async function handleSignup(event) {
             event.preventDefault();
             clearMessages();
 
-            // 1. Validate Form
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
             const studentId = document.getElementById('signupStudentId').value;
             const password = document.getElementById('signupPassword').value;
 
-            // 2. Validate ID Verification
             if (!isIdVerified || !capturedImageBlob) {
                 showError('signupError', 'Please scan or upload a valid Student ID first.');
                 return;
@@ -572,22 +599,19 @@
                 signupSubmitBtn.textContent = "Creating Account...";
                 signupSubmitBtn.disabled = true;
 
-                // 3. Create Auth User
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 const user = userCredential.user;
 
-                // 4. Upload Verified ID Image
                 const fileRef = storage.ref('student-ids/' + user.uid + '/id_verification.jpg');
                 await fileRef.put(capturedImageBlob);
                 const fileURL = await fileRef.getDownloadURL();
 
-                // 5. Save Data to Realtime Database
                 await database.ref('users/' + user.uid).set({
                     name: name,
                     email: email,
                     studentId: studentId,
                     studentIdFileURL: fileURL,
-                    verificationStatus: 'verified', // Auto-verified by our system
+                    verificationStatus: 'verified',
                     createdAt: Date.now()
                 });
 
@@ -601,21 +625,17 @@
             }
         }
 
-        // Handle Google Sign In
         async function handleGoogleSignIn() {
             clearMessages();
             const provider = new firebase.auth.GoogleAuthProvider();
             try {
-                const result = await auth.signInWithPopup(provider);
-                // For Google Sign-In, you might want to redirect them to a profile completion page
-                // if they haven't uploaded an ID yet. For now, we just redirect.
+                await auth.signInWithPopup(provider);
                 window.location.href = 'index.html';
             } catch (error) {
                 showError('loginError', getErrorMessage(error.code));
             }
         }
 
-        // ================= HELPERS =================
         function showError(elementId, message) {
             const errorEl = document.getElementById(elementId);
             errorEl.textContent = message;
@@ -639,7 +659,6 @@
             return errorMessages[errorCode] || errorCode;
         }
 
-        // Auth Listener - Auto-redirect if already logged in
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 window.location.href = 'index.html';
