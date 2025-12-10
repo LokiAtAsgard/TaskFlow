@@ -6,7 +6,6 @@
     <title>TaskFlow App</title>
     <link rel="stylesheet" href="styles.css" />
 
-
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -14,9 +13,14 @@
 <body>
     <div class="applicationContainer">
         <header class="headerSection">
-            <h1 class="mainTitle">TaskFlow</h1>
-            <p class="headerDescription">Smart Task Management with Firebase</p>
-            <div id="firebaseStatusText" class="firebaseStatus">Connecting...</div>
+            <div class="header-top">
+                <div class="header-content">
+                    <h1 class="mainTitle">TaskFlow</h1>
+                    <p class="headerDescription">Smart Task Management with Firebase</p>
+                    <div id="firebaseStatusText" class="firebaseStatus">Connecting...</div>
+                </div>
+                <button id="signOutButton" class="signOutButton">Sign Out</button>
+            </div>
         </header>
 
         <section class="statisticsSection">

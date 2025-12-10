@@ -19,6 +19,7 @@ const firebaseConfig = {
 let firebaseApp;
 let firebaseDatabase;
 let tasksReference;
+let currentUser = null; // Store current user
 
 let allTasksArray = [];
 let currentActiveFilter = 'all';
@@ -43,9 +44,8 @@ function initializeTaskFlowApplication() {
 function initializeFirebaseConnection() {
     try {
         firebaseApp = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); // Initialize Auth
+        const auth = firebase.auth();
         firebaseDatabase = firebase.database();
-        tasksReference = firebaseDatabase.ref('tasks');
 
         console.log("Firebase initialized successfully!");
 
@@ -56,6 +56,11 @@ function initializeFirebaseConnection() {
                 window.location.href = "login.html";
             } else {
                 console.log("User signed in:", user.email);
+                currentUser = user;
+
+                // **FIX: Use user-specific tasks path**
+                tasksReference = firebaseDatabase.ref('users/' + user.uid + '/tasks');
+
                 updateFirebaseConnectionStatus('🟢 Connected as ' + user.email, 'success');
                 setupFirebaseRealTimeListener();
                 testFirebaseConnection();
@@ -79,17 +84,24 @@ function setupFirebaseRealTimeListener() {
                 firebaseKey: key,
                 ...data[key]
             }));
+            console.log("Loaded tasks:", allTasksArray);
         } else {
             allTasksArray = [];
+            console.log("No tasks found for this user");
         }
         renderTasksToDisplay();
         updateStatisticsDisplay();
         updateProgressBarDisplay();
+    }, (error) => {
+        console.error("Error loading tasks:", error);
+        updateFirebaseConnectionStatus('🔴 Error loading tasks', 'error');
     });
 }
 
 function testFirebaseConnection() {
-    const testRef = firebaseDatabase.ref('connectionTest');
+    if (!currentUser) return;
+
+    const testRef = firebaseDatabase.ref('users/' + currentUser.uid + '/connectionTest');
     const testData = { message: 'TaskFlow connection test', timestamp: Date.now() };
 
     testRef.set(testData)
@@ -98,7 +110,7 @@ function testFirebaseConnection() {
             const val = snapshot.val();
             if (val && val.message === testData.message) {
                 console.log("Firebase connection test successful");
-                // Status is already updated in the Auth listener
+                updateFirebaseConnectionStatus('🟢 Connected as ' + currentUser.email, 'success');
             }
             testRef.remove();
         })
@@ -115,6 +127,7 @@ function setupEventListeners() {
     const addNewTaskButton = document.getElementById('addNewTaskButton');
     const newTaskInput = document.getElementById('newTaskInput');
     const filterButtonsContainer = document.querySelector('.filterButtonsContainer');
+    const signOutButton = document.getElementById('signOutButton');
 
     if (addNewTaskButton) addNewTaskButton.addEventListener('click', handleAddNewTaskClick);
     if (newTaskInput) newTaskInput.addEventListener('keypress', e => {
@@ -122,6 +135,7 @@ function setupEventListeners() {
     });
 
     if (filterButtonsContainer) filterButtonsContainer.addEventListener('click', handleFilterButtonClick);
+    if (signOutButton) signOutButton.addEventListener('click', handleSignOut);
 }
 
 /* ================================
@@ -132,7 +146,15 @@ function handleAddNewTaskClick() {
     const priority = document.getElementById('taskPriorityDropdown').value;
     const description = input.value.trim();
 
-    if (description === '') return;
+    if (description === '') {
+        alert('Please enter a task description');
+        return;
+    }
+
+    if (!tasksReference) {
+        alert('Not connected to Firebase. Please refresh the page.');
+        return;
+    }
 
     const newTask = {
         description,
@@ -141,18 +163,36 @@ function handleAddNewTaskClick() {
         createdAt: Date.now()
     };
 
-    const newRef = tasksReference.push();
-    newRef.set(newTask);
+    console.log("Adding new task:", newTask);
 
-    input.value = '';
+    const newRef = tasksReference.push();
+    newRef.set(newTask)
+        .then(() => {
+            console.log("Task added successfully!");
+            input.value = '';
+        })
+        .catch((error) => {
+            console.error("Error adding task:", error);
+            alert("Error adding task: " + error.message);
+        });
 }
 
 function toggleTaskCompletion(taskKey, completed) {
-    tasksReference.child(taskKey).update({ completed });
+    if (!tasksReference) return;
+
+    tasksReference.child(taskKey).update({ completed })
+        .then(() => console.log("Task completion toggled"))
+        .catch(err => console.error("Error toggling task:", err));
 }
 
 function deleteTask(taskKey) {
-    tasksReference.child(taskKey).remove();
+    if (!tasksReference) return;
+
+    if (confirm('Are you sure you want to delete this task?')) {
+        tasksReference.child(taskKey).remove()
+            .then(() => console.log("Task deleted"))
+            .catch(err => console.error("Error deleting task:", err));
+    }
 }
 
 /* ================================
@@ -166,7 +206,6 @@ function priorityToStars(priority) {
         default: return '';
     }
 }
-
 
 /* ================================
    RENDER FUNCTIONS
@@ -188,7 +227,7 @@ function renderTasksToDisplay() {
     }
 
     if (tasksToRender.length === 0) {
-        container.innerHTML = '<p>No tasks found.</p>';
+        container.innerHTML = '<p class="noTasksMessage">No tasks found. Add your first task above!</p>';
         return;
     }
 
@@ -254,6 +293,23 @@ function handleFilterButtonClick(e) {
 
     currentActiveFilter = e.target.dataset.filter;
     renderTasksToDisplay();
+}
+
+/* ================================
+   AUTH FUNCTIONS
+   ================================ */
+function handleSignOut() {
+    if (confirm('Are you sure you want to sign out?')) {
+        firebase.auth().signOut()
+            .then(() => {
+                console.log("User signed out successfully");
+                window.location.href = "login.html";
+            })
+            .catch((error) => {
+                console.error("Sign out error:", error);
+                alert("Error signing out. Please try again.");
+            });
+    }
 }
 
 /* ================================
